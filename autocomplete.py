@@ -10,7 +10,7 @@ import argparse
 import queries
 from tree_sitter import Language, Parser
 
-PY_LANGUAGE = Language('build/languages.so', 'python')
+PY_LANGUAGE = Language('build/python.so', 'python')
 
 class Autocomplete():
     def __init__(self, tree, code_bytes, pos):
@@ -202,7 +202,7 @@ if __name__ == "__main__":
     parser = Parser()
     parser.set_language(PY_LANGUAGE)
     tree = parser.parse(code_bytes)
-
+    
     cursor_byte, prev_text = handle_cursor_pos(args.file, args.pos)
     completer = Autocomplete(tree, code_bytes, args.pos)
     suggestions = completer.autocomplete(cursor_byte, prev_text)
