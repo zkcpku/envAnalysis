@@ -22,6 +22,7 @@ class Person:
 
 	def say_hello(self, age):
 		mno = "Bye!"
+		tmp = [e for e in range(age)]
 		print("Hi, my name is " + self.name)
 
 def bar():

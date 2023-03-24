@@ -37,3 +37,43 @@ imports_as_query = """
             alias: (identifier) @import-as))
 """
 
+#   import_from_statement [5, 0] - [5, 22]
+#     module_name: dotted_name [5, 5] - [5, 11]
+#       identifier [5, 5] - [5, 11]
+#     name: dotted_name [5, 19] - [5, 20]
+#       identifier [5, 19] - [5, 20]
+#     name: dotted_name [5, 21] - [5, 22]
+#       identifier [5, 21] - [5, 22]
+import_from_query = """
+    (import_from_statement
+        module_name: (dotted_name (identifier) @import-name)
+        name: (dotted_name (identifier) @import-from))
+"""
+
+
+api_query = """
+    (call
+        function: (attribute
+            object: (identifier) @api.object
+            attribute: (identifier) @api.attribute))
+"""
+
+api_function_query = """
+    (call
+        function: (identifier) @api.function)
+"""
+
+api_and_api_function_query = """
+    (call
+        [function: (attribute
+            object: (identifier) @api.object
+            attribute: (identifier) @api.attribute)
+        function: (identifier) @api.function])
+"""
+
+whole_api_and_api_function = """
+    (call
+        [function: (attribute) @api.attribute
+        function: (identifier) @api.function])
+"""
+

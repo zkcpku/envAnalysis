@@ -62,6 +62,15 @@ class Autocomplete():
         query = PY_LANGUAGE.query(query_str)
         captures = query.captures(self.tree.root_node)
         return [self.get_node_value(capture[0]).decode('utf-8') for capture in captures]
+    def parse_with_query_and_pos(self, query_str):
+        # return captures and positions
+        query = PY_LANGUAGE.query(query_str)
+        captures = query.captures(self.tree.root_node)
+        return [(self.get_node_value(capture[0]).decode('utf-8'), capture[0].start_byte, capture[0].end_byte, self.start_byte2linenum(capture[0].start_byte)) for capture in captures]
+    def start_byte2linenum(self, start_byte):
+        # return line number
+        return self.code_bytes[:start_byte].count(b'\n') + 1
+
     
     def get_node_children_value_given_type(self, node, given_type="identifier"):
         """ Utility function to get the value of a node's children given a type.
@@ -178,6 +187,10 @@ class Autocomplete():
         
         return suggestions
 
+    def extract_used_api(self):
+        api_calls = self.parse_with_query_and_pos(queries.whole_api_and_api_function)
+        api_calls = list(set(api_calls))
+        return api_calls
 
 def handle_cursor_pos(file, pos):
     """ Reads file line by line to get the byte position of the given cursor
@@ -233,4 +246,6 @@ if __name__ == "__main__":
     # print(prev_text)
     completer = Autocomplete(tree, code_bytes, args.pos)
     suggestions = completer.autocomplete(cursor_byte, prev_text)
+    api_calls = completer.extract_used_api()
+    print(api_calls)
     print(suggestions)
