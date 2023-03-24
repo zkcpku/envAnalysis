@@ -12,4 +12,6 @@ pip install tree-sitter
 python autocomplete.py --file code_example.py --pos 19
 python autocomplete.py --file code_example.py --pos 18
 python autocomplete.py --file code_example.py --pos 6
+python autocomplete.py --file code_example.py --pos 20
+python autocomplete.py --file code_example.py --pos 1000
 ```

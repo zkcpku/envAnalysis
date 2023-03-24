@@ -63,6 +63,19 @@ class Autocomplete():
         captures = query.captures(self.tree.root_node)
         return [self.get_node_value(capture[0]).decode('utf-8') for capture in captures]
     
+    def get_node_children_value_given_type(self, node, given_type="identifier"):
+        """ Utility function to get the value of a node's children given a type.
+
+        Args:
+            node: Tree-sitter node
+            given_type: Type of node to look for
+        
+        Returns:
+            List of str with query results
+        """
+        return [self.get_node_value(child).decode('utf-8') for child in node.children if child.type == given_type]
+
+    
     def parse_vars_funcs_in_scope(self, cursor_byte):
         """ Based on the cursor location (byte) recurses through the
             code tree and identifies variables defined in functions
@@ -77,6 +90,7 @@ class Autocomplete():
         class_vars = []
         func_vars = []
         funcs_in_scope = []
+        func_paras = []
         # Recurse through parse tree
         def traverse(node):
             for child in node.children:
@@ -101,16 +115,22 @@ class Autocomplete():
                     # Check if in function scope and before cursor position
                     if self.byte_within_scope(self.valid_func_scope, child.start_byte) and child.start_byte <= cursor_byte:
                         func_vars.append(self.get_node_value(child).decode("utf-8"))
+                if child.type == 'parameters':
+                    # Check if in function scope
+                    if self.byte_within_scope(self.valid_func_scope, child.start_byte) and child.start_byte <= cursor_byte:
+                        children_identifiers = self.get_node_children_value_given_type(child)
+                        func_paras.extend(children_identifiers)
                 
                 traverse(child)
 
         traverse(self.tree.root_node)
         # Grab class variable names from assignment string
-        class_vars = [class_var.split()[0].split('.')[-1] 
+        # class_vars = ['self.name = name', 'self.address = address', 'abc = [5, 3]', 'xyz = "Hi"']
+        class_vars = [class_var.split("=")[0].strip().split('.')[-1] 
             for class_var in class_vars if class_var.startswith('self.')]
         # Grab function variables from assignment
         func_vars = [func_var.split()[0] for func_var in func_vars]
-        return class_vars, func_vars, funcs_in_scope
+        return class_vars, func_vars, funcs_in_scope, func_paras
 
     def autocomplete(self, cursor_byte, prev_text=""):
         """ Analyzes source code and uses the cursor position to
@@ -131,9 +151,15 @@ class Autocomplete():
         # global_vars = self.parse_with_query(queries.globals_query)
         # functions = self.parse_with_query(queries.functions_query)
         imports = self.parse_with_query(queries.imports_query)
+        imports_as = self.parse_with_query(queries.imports_as_query)
         functions = self.parse_functions()
 
-        class_vars, func_vars, funcs_in_scope = self.parse_vars_funcs_in_scope(cursor_byte)
+        # print("global_vars", global_vars)
+        # print("imports", imports)
+        # print("imports_as", imports_as)
+        # print("functions", functions)
+
+        class_vars, func_vars, funcs_in_scope, func_paras = self.parse_vars_funcs_in_scope(cursor_byte)
         suggestions = []
         line_len = len(prev_text)
         prev_token = prev_text.split()[-1] if line_len > 0 else ''
@@ -143,7 +169,7 @@ class Autocomplete():
             suggestions.extend(funcs_in_scope)
             prev_token = prev_token.split('.')[-1]
         else:
-            for l in [global_vars, imports, func_vars, functions]:
+            for l in [global_vars, imports, func_vars, functions, func_paras, imports_as]:
                 suggestions.extend(l)
 
         # Filter for text in the last line
@@ -204,6 +230,7 @@ if __name__ == "__main__":
     tree = parser.parse(code_bytes)
     
     cursor_byte, prev_text = handle_cursor_pos(args.file, args.pos)
+    # print(prev_text)
     completer = Autocomplete(tree, code_bytes, args.pos)
     suggestions = completer.autocomplete(cursor_byte, prev_text)
     print(suggestions)
