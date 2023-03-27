@@ -4,8 +4,8 @@ Language.build_library(
   'build/languages.so',
 
   [
-    'vendor/tree-sitter-javascript',
-    'vendor/tree-sitter-python'
+    '../tree-sitter-javascript',
+    '../tree-sitter-python'
   ]
 )
 
@@ -25,7 +25,7 @@ def foo():
 """, "utf8"))
 
 root_node = tree.root_node
-import ipdb; ipdb.set_trace()
+# import ipdb; ipdb.set_trace()
 assert root_node.type == 'module'
 assert root_node.start_point == (1, 0)
 assert root_node.end_point == (3, 13)
