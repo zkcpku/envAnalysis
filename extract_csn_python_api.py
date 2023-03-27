@@ -77,7 +77,11 @@ def extract_code_lines(code, start_end_pairs):
             'line_nums': [start_line,end_line]
             })
     return ret_codes
-        
+
+def str2bool(str):
+    return True if str.lower() == 'true' else False
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract utility")
     parser.add_argument(
@@ -101,13 +105,14 @@ def main():
     parser.add_argument(
         '--extract_surrounding_code',
         dest='extract_surrounding_code',
-        type=bool,
+        type=str2bool,
         help='Whether to extract surrounding code.',
         default=True)
     args = parser.parse_args()
     parser = Parser()
     parser.set_language(PY_LANGUAGE)
     extract_surrounding_code = args.extract_surrounding_code
+    import ipdb; ipdb.set_trace()
 
     json_reader = read_jsonl(args.file)
 
