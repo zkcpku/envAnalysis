@@ -98,9 +98,16 @@ def main():
         type=str,
         help='The file path to save the extracted api calls.',
         required=True)
+    parser.add_argument(
+        '--extract_surrounding_code',
+        dest='extract_surrounding_code',
+        type=bool,
+        help='Whether to extract surrounding code.',
+        default=True)
     args = parser.parse_args()
     parser = Parser()
     parser.set_language(PY_LANGUAGE)
+    extract_surrounding_code = args.extract_surrounding_code
 
     json_reader = read_jsonl(args.file)
 
@@ -129,14 +136,18 @@ def main():
         if len(json_obj['valid_api_calls']) == 0:
             no_valid += 1
             continue
-        all_line_nums = [e[-1] for e in json_obj['valid_api_calls']]
-        start_end_pairs = [extract_surronding_linenums(json_obj[args.key],linen,5) for linen in all_line_nums]
-        start_end_pairs = compose_start_and_end_line(start_end_pairs)
-        surround_codes = extract_code_lines(json_obj[args.key], start_end_pairs)
-        for each_surround_code in surround_codes:
+        if extract_surrounding_code:
+            all_line_nums = [e[-1] for e in json_obj['valid_api_calls']]
+            start_end_pairs = [extract_surronding_linenums(json_obj[args.key],linen,5) for linen in all_line_nums]
+            start_end_pairs = compose_start_and_end_line(start_end_pairs)
+            surround_codes = extract_code_lines(json_obj[args.key], start_end_pairs)
+            for each_surround_code in surround_codes:
+                total_num += 1
+                # import ipdb; ipdb.set_trace()
+                write_jsonl_append(args.save_file,each_surround_code)
+        else:
             total_num += 1
-            # import ipdb; ipdb.set_trace()
-            write_jsonl_append(args.save_file,each_surround_code)
+            write_jsonl_append(args.save_file, json_obj)
 
 
             

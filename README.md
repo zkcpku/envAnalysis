@@ -1,4 +1,22 @@
-# treesitter-autocomplete
+# treesitter-autocomplete-&-extract_api
+
+## treesitter-extract_api
+Extract API from python code using tree-sitter
+
+### Example Run Commands
+
+捕获api所在行的上下几行的代码
+```Shell
+python extract_csn_python_api.py --file "envAnalysis/data/CSN_python_func_code_string_filter(numpy&pandas).json" --key func_code_string --save_file "envAnalysis/data/CSN_python_func_code_string_filter_np&pd_with_valid_api.json"
+```
+
+如果需要捕获所有代码
+```Shell
+python extract_csn_python_api.py --file "envAnalysis/data/CSN_python_func_code_string_filter(numpy&pandas).json" --key func_code_string --save_file "envAnalysis/data/CSN_python_func_code_string_filter_np&pd_with_valid_api.json" --extract_surrounding_code False
+```
+
+
+## treesitter-autocomplete
 Autocomplete utility using tree-sitter for python code
 
 ### Requirements
