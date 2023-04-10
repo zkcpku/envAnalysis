@@ -3,3 +3,4 @@ build/.DS_Store
 *.pyc
 *.json
 *.need_delete.*
+.DS_Store
