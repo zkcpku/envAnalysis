@@ -60,6 +60,15 @@ def get_api_call_from_module(module_name):
         abbr_api_calls = []
     return api_calls + abbr_api_calls
 
+def append_to_jsonl(data, filename):
+    """Append a json payload to the end of a jsonl file."""
+    json_string = json.dumps(data)
+    if type(filename) == io.StringIO:
+        filename.write(json_string + "\n")
+    else:
+        with open(filename, "a") as f:
+            f.write(json_string + "\n")
+
 
 if __name__ == "__main__":
     # np_array_doc = get_api_doc_from_api_str("np.array")
