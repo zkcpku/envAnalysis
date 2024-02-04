@@ -44,10 +44,39 @@ imports_as_query = """
 #       identifier [5, 19] - [5, 20]
 #     name: dotted_name [5, 21] - [5, 22]
 #       identifier [5, 21] - [5, 22]
-import_from_query = """
+# and即既包含from后面的 又包含import后面的
+imports_and_from_query = """
     (import_from_statement
         module_name: (dotted_name (identifier) @import-name)
         name: (dotted_name (identifier) @import-from))
+"""
+
+imports_from_query = """
+    (import_from_statement
+        module_name: (dotted_name (identifier) @import-name)
+        name: (dotted_name (identifier) @import-from))
+"""
+
+# from .distance_metrics import euclidean
+#   import_from_statement [6, 0] - [6, 39]
+#     module_name: relative_import [6, 5] - [6, 22]
+#       import_prefix [6, 5] - [6, 6]
+#       dotted_name [6, 6] - [6, 22]
+#         identifier [6, 6] - [6, 22]
+#     name: dotted_name [6, 30] - [6, 39]
+#       identifier [6, 30] - [6, 39]
+imports_relative_query = """
+    (import_from_statement
+        module_name: (relative_import
+            )  
+        name: (dotted_name (identifier) @import-name))
+"""
+
+class_def_query = """
+    (class_definition
+        name: (identifier) @class-name
+        body: (block)
+        )
 """
 
 
@@ -76,4 +105,3 @@ whole_api_and_api_function = """
         [function: (attribute) @api.attribute
         function: (identifier) @api.function])
 """
-
