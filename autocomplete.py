@@ -225,13 +225,16 @@ if __name__ == "__main__":
         dest='file',
         type=str,
         help='The file path to source code.',
-        required=True)
+        default="code_example.py",
+        # required=True
+        )
     parser.add_argument(
         '--pos',
         dest='pos',
         type=int,
         help='Cursor position in source code',
-        required=True
+        default=1000000,
+        # required=True
     )
     args = parser.parse_args()
 
