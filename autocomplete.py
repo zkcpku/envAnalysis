@@ -10,7 +10,7 @@ import argparse
 import queries
 from tree_sitter import Language, Parser
 
-PY_LANGUAGE = Language('/mnt/e/zkcpku/Github/OpenAICodeT/utils/build/my-languages.so', 'python')
+PY_LANGUAGE = Language('build/python.so', 'python')
 
 class Autocomplete():
     def __init__(self, tree, code_bytes, pos):
@@ -366,7 +366,8 @@ if __name__ == "__main__":
         dest='file',
         type=str,
         help='The file path to source code.',
-        required=True)
+        required=True
+    )
     parser.add_argument(
         '--pos',
         dest='pos',
