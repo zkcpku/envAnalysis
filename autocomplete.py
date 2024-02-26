@@ -235,7 +235,7 @@ class Autocomplete():
 
     def pos2code(self, start_byte, end_byte):
         code_bytes = self.code_bytes
-        return code_bytes[start_byte:end_byte].decode("utf-8")
+        return (code_bytes[start_byte:end_byte].decode("utf-8"), start_byte, end_byte)
 
     def symbols_with_pos(self, cursor_byte, prev_text="", return_type_dict=False):
         # Autocomplete globals, variables in scope, functions, or methods

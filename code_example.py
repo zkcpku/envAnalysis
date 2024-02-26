@@ -25,8 +25,8 @@
 # 		tmp = [e for e in range(age)]
 # 		print("Hi, my name is " + self.name)
 
-# def bar():
-# 	print("Something")
+def bar():
+	print("Something")
 
 # if __name__ == "__main__":
 # 	print("This is a great program")
