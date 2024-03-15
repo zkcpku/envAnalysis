@@ -26,6 +26,24 @@ def extract(each_content):
     rst = { "symbols": symbol_dict, "content": each_content}
     return rst
 
+def codeContext2jsonContext(each_content):
+    api_calls, suggestions = extract_symbols(each_content)
+    suggestions, suggestion_loc = format_symbol_suggestion(suggestions)
+    symbol_dict = {}
+    for k in suggestion_loc:
+        if k not in ['mannual_defined_function', 'mannual_defined_class']:
+            continue
+        for e in suggestion_loc[k]:
+            symbol_dict[e[0]] = {"type": k, "code_body": e[1][0], "pos": e[1][1]}
+    # rst = { "symbols": symbol_dict, "content": each_content}
+    # json_context = [{"entity_name": "", "entity_body": ""}]
+    json_context = []
+    for k in suggestion_loc:
+        if k in ['mannual_defined_function', 'mannual_defined_class']:
+            for e in suggestion_loc[k]:
+                json_context.append({"entity_name": e[0], "entity_body": e[1][0]})
+    return json_context
+
 def extract_files(inp_dir, file_type=".py"):
     import os
     files = []
@@ -235,7 +253,7 @@ class TestCase:
         with open("/Users/zkcpku/Documents/seke/mywork/分块ROPE/dataset/symbols_filtered.json", 'w') as f:
             json.dump(total_rst, f)
         print("length of total_rst: ", len(total_rst))
-    def test_renew_dataset():
+    def _test_renew_dataset():
         import json
         inp_path = "/Users/zkcpku/Documents/seke/mywork/分块ROPE/openai_src/gen_out/openai_default_codesymbols.jsonl"
         tokenizer_path = '/Users/zkcpku/Documents/seke/mywork/分块ROPE/Llama-2-7b-hf'
@@ -254,6 +272,26 @@ class TestCase:
         with open(save_path, 'w') as f:
             for e in save_lines:
                 f.write(json.dumps(e) + "\n")
+    def test_gen_json_format_context():
+        import json
+        inp_path = '/Users/zkcpku/Documents/seke/mywork/分块ROPE/openai_src/codesymbols_outputless100.jsonl'
+        out_path = '/Users/zkcpku/Documents/seke/mywork/分块ROPE/openai_src/codesymbols_outputless100.jsoncontext.jsonl'
+        out_lines = []
+        with open(inp_path, 'r') as f:
+            lines = f.readlines()
+            lines = [json.loads(x) for x in lines]
+        for each_line in tqdm(lines):
+            each_inp = each_line['input']
+            json_context = codeContext2jsonContext(each_inp)
+            each_line['json_context'] = json_context
+            out_lines.append(each_line)
+        with open(out_path, 'w') as f:
+            for e in out_lines:
+                f.write(json.dumps(e) + "\n")
+        
+
+            
+            
             
 
 
